@@ -1,0 +1,42 @@
+{
+    "LoggingFolder": "logs",
+    "ProcessSettings": {
+        "Cursor": {
+            "DoSeparations": true,
+            "Separator": " - ",
+            "RemoveParts": [0],
+            "TrimCharacters": ["\u25CF"]
+        },
+        "Code": {
+            "DoSeparations": true,
+            "Separator": " - ",
+            "RemoveParts": [0],
+            "TrimCharacters": ["\u25CF"]
+        },
+        "TOTALCMD64": {
+            "EntriesByWindowTitle": false
+        },
+        "KeePass": {
+            "EntriesByWindowTitle": false,
+            "TrimCharacters": ["*"]
+        },
+        "SearchHost": {
+            "EntriesByWindowTitle": false
+        },
+        "Fork": {
+            "EntriesByWindowTitle": false
+        },
+        "Sonos": {
+            "EntriesByWindowTitle": false
+        },
+        "StorageExplorer": {
+            "EntriesByWindowTitle": false
+        },
+        "Slack": {
+            "TrimCharacters": ["*"],
+            "DoSeparations": true,
+            "Separator": " - ",
+            "KeepParts": [0, 1]
+        }
+    }
+}
