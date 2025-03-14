@@ -2,7 +2,8 @@
 public class CommandLineArgs
 {
     public string? DayFileName { get; private set; }
-    public bool DoCopyToClipboard { get; private set; }
+    public bool DoCopyToClipboard { get; private set; } = false;
+	public bool DoShowAll { get; private set; } = false;
 
     public static CommandLineArgs Parse(string[] args)
     {
@@ -18,6 +19,12 @@ public class CommandLineArgs
             if (args[i] == "--copy" || args[i] == "-c")
             {
                 result.DoCopyToClipboard = true;
+                continue;
+            }
+
+            if (args[i] == "--all" || args[i] == "-a")
+            {
+                result.DoShowAll = true;
                 continue;
             }
 

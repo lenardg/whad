@@ -15,7 +15,7 @@ public class WindowLogger
 
     private readonly Settings settings;
 
-    public static void ShowProcessTimes(Dictionary<string, Dictionary<string, double>> processWindowTimes, bool copyToClipboard = false)
+    public static void ShowProcessTimes(Dictionary<string, Dictionary<string, double>> processWindowTimes, bool showAll = false, bool copyToClipboard = false)
     {
         var output = new StringBuilder();
         if (processWindowTimes != null)
@@ -23,7 +23,12 @@ public class WindowLogger
             foreach (var process in processWindowTimes)
             {
                 var totalTime = process.Value.Values.Sum();
-                output.AppendLine($"\n[{process.Key}] Total: {totalTime:F1} minutes");
+				if (!showAll && totalTime < 1.0)
+				{
+					continue;
+				}
+                var totalTimeSpan = TimeSpan.FromMinutes(totalTime);
+                output.AppendLine($"\n[{process.Key}] Total: {totalTimeSpan:hh\\:mm\\:ss}");
 
                 var hasMicroPeriods = false;
                 var hasRegularPeriods = false;
@@ -63,18 +68,18 @@ public class WindowLogger
         if (today != todayDate)
         {
             Console.WriteLine("\nDay changed! Saving previous day's records...");
-            
+
             // Save current window time and all accumulated times for the previous day
             ShowCurrentProcessTimes();
             SaveLog(todayDate); // Save to the previous day's file
-            
+
             // Reset tracking for the new day
             todayDate = today;
             processWindowTimes = LoadLog(); // This will load any existing records for the new day
             currentWindowTitle = null;
             currentProcessName = null;
             stopwatch.Reset();
-            
+
             Console.ForegroundColor = ConsoleColor.White;
             Console.WriteLine("==================================================================");
             Console.WriteLine($"Starting new day tracking for {today:yyyy-MM-dd}");
@@ -117,8 +122,8 @@ public class WindowLogger
     {
         if (processWindowTimes.Count > 0)
         {
-            Console.WriteLine("Loaded existing window times for today:");
-            Console.WriteLine("----------------------------------------");
+            Console.WriteLine("Times for today (where total time > 1 minute):");
+            Console.WriteLine("----------------------------------------------");
             ShowProcessTimes(processWindowTimes);
         }
     }
@@ -265,7 +270,7 @@ public class WindowLogger
                     Console.Write(", App total: ");
                     Console.ForegroundColor = ConsoleColor.Green;
                     Console.Write(totalTimeFormatted);
-                    
+
                     Console.ResetColor();
                     Console.Write(") ==> Today: ");
                     Console.ForegroundColor = ConsoleColor.Cyan;
@@ -274,7 +279,7 @@ public class WindowLogger
                         .Where(p => p.Key != processName)
                         .Sum(p => p.Value.Values.Sum());
                     Console.Write(FormatTime(totalTime + otherProcessTimes));
-                    
+
                     Console.ResetColor();
                     Console.Write("         \r");
                 }

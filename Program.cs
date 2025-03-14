@@ -89,7 +89,7 @@ public class WindowLoggerMain
                     {
                         Console.WriteLine($"Summary for {logfilename}:");
                         Console.WriteLine("----------------------------------------");
-                        WindowLogger.ShowProcessTimes(processWindowTimes, commandLineArgs.DoCopyToClipboard);
+                        WindowLogger.ShowProcessTimes(processWindowTimes, commandLineArgs.DoShowAll, commandLineArgs.DoCopyToClipboard);
                     }
                     else
                     {
@@ -101,7 +101,7 @@ public class WindowLoggerMain
                 {
                     Console.WriteLine($"Error: File {logfilename} not found");
                     return false;
-                }               
+                }
             }
         }
         catch (Exception ex)
