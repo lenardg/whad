@@ -1,5 +1,6 @@
 
 using System.Diagnostics;
+using System.Runtime.InteropServices;
 using System.Text;
 
 namespace WindowLogger;
@@ -14,7 +15,7 @@ public static class SystemInterop
     public const string NO_ACTIVE_WINDOW = "--macOS System--";
     public const string NO_ACTIVE_PROCESS = "--macOS System--";
     #endif
-    
+
     public static void CopyToClipboard(string text)
     {
         #if WINDOWS
@@ -51,7 +52,7 @@ public static class SystemInterop
                 ProcessName = process.ProcessName
             };
             return windowInfo;
-        }   
+        }
         catch (ArgumentException)
         {
             return null;
@@ -60,10 +61,24 @@ public static class SystemInterop
     #endif
 
     #if MACOS
+
     public static WindowInfo? GetActiveWindowInfo()
     {
-        return null;
+		var (title, pid) = MacOSInterop.GetActiveWindowInfo();
+		if (title == null || pid == 0)
+		{
+			return new WindowInfo { Title = NO_ACTIVE_WINDOW, ProcessName = NO_ACTIVE_PROCESS };
+		}
+
+		var processName = MacOSInterop.GetProcessName(pid);
+		if (processName == null)
+		{
+			return new WindowInfo { Title = NO_ACTIVE_WINDOW, ProcessName = NO_ACTIVE_PROCESS };
+		}
+
+		return new WindowInfo { Title = title, ProcessName = processName };
     }
+
     #endif
 
 }
