@@ -1,0 +1,10 @@
+---
+description: 
+globs: *.cs
+alwaysApply: false
+---
+
+# Your rule content
+
+- We are creating a console mode .NET multiplatform app to run on Windows and MacOS
+

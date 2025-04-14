@@ -3,7 +3,7 @@ namespace WindowLogger;
 public class Settings
 {
     public string LoggingFolder { get; set; } = "logs";
-    
+
     public Dictionary<string, ProcessOptions> ProcessSettings { get; set; } = new();
 }
 
@@ -13,7 +13,7 @@ public class ProcessOptions
     /// Should we separate the window title into parts?
     /// </summary>
     public bool DoSeparations { get; set; } = true;
- 
+
     /// <summary>
     /// The separator to use for separating the window title into parts.
     /// </summary>
@@ -38,4 +38,6 @@ public class ProcessOptions
     /// Trim any characters off the title before processing
     /// </summary>
     public string[] TrimCharacters { get; set; } = Array.Empty<string>();
+
+	public string[] GroupBySeparators { get; set; } = Array.Empty<string>();
 }
