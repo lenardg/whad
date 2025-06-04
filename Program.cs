@@ -13,7 +13,7 @@ public class WindowLoggerMain
             cts.Cancel();
         };
 
-        Console.WriteLine("WINDOW TIME LOGGER - v1.0.0");
+        Console.WriteLine("WHAT HAVE I DONE (WHAD) - v1.0.0");
         Console.WriteLine("Copyright (c) 2025 by Lenard Gunda");
         Console.WriteLine();
 
