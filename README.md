@@ -1,4 +1,4 @@
-# What Have I Done?
+# What Have (I) Done?
 
 A command-line utility that tracks how much time you spend in different windows and applications throughout the day.
 
@@ -22,11 +22,26 @@ Simply run the application to start tracking window times:
 whad.exe
 ```
 
-### Configuration
+### Checking logs
+
+You can check logs by specifying which day to.
+
+```bash
+whad.exe 2025-06-04
+```
+
+This will display logs for 4th of June, 2025. Date parsing uses default setting for the computer.
+
+You can specify arguments:
+
+- `--all` or `-a` will show all entries, not just those that are longer than 1 minute
+- `--copy` or `-c` will copy results to clipboard
+
+## Configuration
 
 The application can be configured through a `settings.json` file. This file allows you to customize how window titles are processed for different applications and where log files are stored.
 
-#### Settings Structure
+### Settings Structure
 
 ```json
 {
@@ -44,7 +59,7 @@ The application can be configured through a `settings.json` file. This file allo
 }
 ```
 
-#### Configuration Options
+### Configuration Options
 
 - `LoggingFolder`: The folder where daily log files will be stored (default: "logs")
 - `ProcessName`: The name of the process to configure (e.g., "chrome", "slack", "code")
@@ -55,7 +70,7 @@ The application can be configured through a `settings.json` file. This file allo
 - `EntriesByWindowTitle`: Whether to track individual entries by window title (default: true)
 - `TrimCharacters`: Array of characters to remove from the title before processing
 
-#### Log File Location
+### Log File Location
 
 By default, the application stores log files in a `logs` folder in the same directory as the executable. You can change this location by setting the `LoggingFolder` property in `settings.json`:
 
@@ -70,7 +85,7 @@ The application will:
 - Store all daily log files in this folder
 - Use the format `window_times_YYYY-MM-DD.json` for log files
 
-#### Example Configurations
+### Example Configurations
 
 1. **Slack Configuration**
 ```json
@@ -109,12 +124,9 @@ This will:
 This will:
 - Track all Total Commander windows as a single entry without separating by title
 
-#### Default Behavior
+### Default Behavior
 
 If no settings are specified for a process, the application will:
 - Track individual entries by window title
 - Not perform any title processing or separation
 - Use the full window title as is
-
-
-
