@@ -2,7 +2,7 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 
-namespace WindowLogger;
+namespace WhatHaveIDone;
 
 #if WINDOWS
 
@@ -16,7 +16,6 @@ public static class Win32Interop {
 
     [DllImport("user32.dll", SetLastError = true)]
     public static extern uint GetWindowThreadProcessId(IntPtr hWnd, out uint lpdwProcessId);
-
 
     [DllImport("user32.dll")]
     public static extern bool OpenClipboard(IntPtr hWndNewOwner);

@@ -1,4 +1,4 @@
-# Window Time Logger
+# What Have I Done?
 
 A command-line utility that tracks how much time you spend in different windows and applications throughout the day.
 
@@ -19,7 +19,7 @@ A command-line utility that tracks how much time you spend in different windows 
 Simply run the application to start tracking window times:
 
 ```bash
-WindowLogger.exe
+whad.exe
 ```
 
 ### Configuration

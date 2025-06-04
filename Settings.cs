@@ -1,4 +1,4 @@
-namespace WindowLogger;
+namespace WhatHaveIDone;
 
 public class Settings
 {

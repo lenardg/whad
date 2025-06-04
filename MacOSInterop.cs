@@ -2,12 +2,14 @@ using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Text;
 
+namespace WhatHaveIDone;
+
 #if MACOS
 
 public static class MacOSInterop {
     // Import CoreGraphics framework
     private const string CoreGraphics = "/System/Library/Frameworks/CoreGraphics.framework/CoreGraphics";
-    
+
     // Import AppKit framework
     private const string AppKit = "/System/Library/Frameworks/AppKit.framework/AppKit";
 
@@ -72,7 +74,7 @@ public static class MacOSInterop {
         }
 
         var windowDict = CFArrayGetValueAtIndex(windowListInfo, 0);
-        
+
         // Get window title
         var kCFWindowOwnerName = Marshal.StringToHGlobalUni("kCGWindowOwnerName");
         var nameRef = CFDictionaryGetValue(windowDict, kCFWindowOwnerName);
@@ -82,7 +84,7 @@ public static class MacOSInterop {
         CFStringGetCString(nameRef, buffer, 256, 0x08000100); // kCFStringEncodingUTF8
         var title = buffer.ToString();
 
-        // Get process ID 
+        // Get process ID
         var kCFWindowOwnerPID = Marshal.StringToHGlobalUni("kCGWindowOwnerPID");
         var pidRef = CFDictionaryGetValue(windowDict, kCFWindowOwnerPID);
         Marshal.FreeHGlobal(kCFWindowOwnerPID);

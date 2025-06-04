@@ -1,4 +1,4 @@
-namespace WindowLogger;
+namespace WhatHaveIDone;
 
 /// <summary>
 /// Information about the current window
