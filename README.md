@@ -2,6 +2,14 @@
 
 A command-line utility that tracks how much time you spend in different windows and applications throughout the day.
 
+## History
+
+This started as an experiment using Cursor to log who I talk with over Slack. It then evolved into a full blown experiment of
+testing Coding Agents, that ended in frustration. I left a single Cursor rule file in place, to remind me of the horrors of
+this vibe coding experience.
+
+In the end, the tool became quite useful so now here it is.
+
 ## Features
 
 - Automatically tracks active window titles and process names
