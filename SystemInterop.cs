@@ -56,7 +56,7 @@ public static class SystemInterop {
 
     public static WindowInfo? GetActiveWindowInfo()
     {
-		var (title, pid) = MacOSInterop.GetActiveWindowInfo();
+		var (title, pid) = MacOSInterop.GetForegroundWindowInfo();
 		if (title == null || pid == 0)
 		{
 			return new WindowInfo { Title = NO_ACTIVE_WINDOW, ProcessName = NO_ACTIVE_PROCESS };
