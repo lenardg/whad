@@ -10,6 +10,11 @@ this vibe coding experience.
 
 In the end, the tool became quite useful so now here it is.
 
+## Requirements
+
+Currently WHAD runs under .NET 8 or .NET 9. It supports Windows only at the moment. Preliminary MacOS support is "AI coded" but
+requires some human coding still :) PRs are welcome.
+
 ## Features
 
 - Automatically tracks active window titles and process names
@@ -28,6 +33,12 @@ Simply run the application to start tracking window times:
 
 ```bash
 whad.exe
+```
+
+or if you do not want to publish executables, you can use the __dotnet__ tool to run it:
+
+```bash
+dotnet run
 ```
 
 ### Checking logs
@@ -119,9 +130,9 @@ This will:
 }
 ```
 This will:
-- Remove the bullet point character
+- Remove the bullet point character (when a file has changes)
 - Split titles by " - "
-- Remove the first part (e.g., "Program.cs" from "● Program.cs - Visual Studio Code")
+- Remove the first part (e.g., "Program.cs" from "● Program.cs - WHAD - Visual Studio Code"). This will group the Visual Studio Code windows without taking into account the actual filename
 
 3. **Total Commander Configuration**
 ```json
