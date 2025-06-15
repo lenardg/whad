@@ -96,7 +96,7 @@ public class WindowLogger {
 
 						Console.Write("  + ");
 						Console.ForegroundColor = ConsoleColor.Cyan;
-						Console.Write($"{totalTimeSpan:hh\\:mm\\:ss}");
+						Console.Write($"{timeSpan:hh\\:mm\\:ss}");
 						Console.ResetColor();
 						Console.WriteLine($" - {window.Key}");
 					}
