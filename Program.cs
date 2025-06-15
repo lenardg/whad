@@ -37,6 +37,8 @@ public class WindowLoggerMain {
 		catch (OperationCanceledException) {
 			Console.WriteLine("\nShutting down gracefully...");
 		}
+
+		Console.WriteLine("Quitting.");
 	}
 
 	private static Settings LoarOrInitSettings() {

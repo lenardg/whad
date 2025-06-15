@@ -125,7 +125,7 @@ public static class MacOSInterop {
     [DllImport("libdl.dylib")]
     private static extern int dlclose(IntPtr handle);
 
-    private static T GetDelegateForFunctionPointer<T>(IntPtr ptr) where T : Delegate
+    private static T? GetDelegateForFunctionPointer<T>(IntPtr ptr) where T : Delegate
     {
         return ptr != IntPtr.Zero ? Marshal.GetDelegateForFunctionPointer<T>(ptr) : null;
     }
