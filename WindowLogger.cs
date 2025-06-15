@@ -81,7 +81,35 @@ public class WindowLogger {
 				Console.WriteLine("");
 
 				if (showDetails) {
-					// TODO
+					var hasMicroPeriods = false;
+					var hasRegularPeriods = false;
+					var microPeriodTotalMinutes = 0.0;
+					foreach (var window in process.Value.OrderByDescending(w => w.Value)) {
+						if (window.Value < 1.0) {
+							hasMicroPeriods = true;
+							microPeriodTotalMinutes += window.Value;
+							continue;
+						}
+
+						hasRegularPeriods = true;
+						var timeSpan = TimeSpan.FromMinutes(window.Value);
+
+						Console.Write("  + ");
+						Console.ForegroundColor = ConsoleColor.Cyan;
+						Console.Write($"{totalTimeSpan:hh\\:mm\\:ss}");
+						Console.ResetColor();
+						Console.WriteLine($" - {window.Key}");
+					}
+
+					if (hasMicroPeriods && hasRegularPeriods) {
+						var smallTimeSpan = TimeSpan.FromMinutes(microPeriodTotalMinutes);
+						Console.Write("  + ");
+						Console.ForegroundColor = ConsoleColor.Cyan;
+						Console.Write($"{smallTimeSpan:hh\\:mm\\:ss}");
+						Console.ResetColor();
+						Console.WriteLine($" - [several micro periods, total]");
+					}
+					Console.WriteLine("");
 				}
 			}
 
@@ -302,6 +330,9 @@ public class WindowLogger {
 					var key = Console.ReadKey();
 					if (key.Key == ConsoleKey.S) {
 						ShowQuickSummary();
+					}
+					if (key.Key == ConsoleKey.D) {
+						ShowQuickSummary(showDetails: true);
 					}
 				}
 
