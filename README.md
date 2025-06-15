@@ -41,6 +41,15 @@ or if you do not want to publish executables, you can use the __dotnet__ tool to
 dotnet run
 ```
 
+### Summaries and details
+
+While the app is logging, you can press the following keys:
+
+* `S` - display a summary for the running day
+* `D` - display details for the running day
+* `Ctrl-C` - close the app
+
+
 ### Checking logs
 
 You can check logs by specifying which day to.
