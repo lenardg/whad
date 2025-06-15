@@ -52,6 +52,54 @@ public class WindowLogger {
 		}
 	}
 
+	private void ShowQuickSummary(bool showAll = false, bool showDetails = false ) {
+		Console.ForegroundColor = ConsoleColor.White;
+		Console.WriteLine("\n===================================================================");
+		Console.WriteLine("Summary");
+		Console.WriteLine("===================================================================");
+		Console.ResetColor();
+
+		if (processWindowTimes != null) {
+			var longestProcessName = processWindowTimes.Keys.Max(x => x.Length);
+
+			var processesInDescendingOrder = processWindowTimes.OrderByDescending(v => v.Value.Values.Sum());
+			foreach (var process in processesInDescendingOrder) {
+				var totalTime = process.Value.Values.Sum();
+				if (!showAll && totalTime < 1.0) {
+					continue;
+				}
+
+				var totalTimeSpan = TimeSpan.FromMinutes(totalTime);
+				Console.Write("[");
+				Console.ForegroundColor = ConsoleColor.Yellow;
+				Console.Write(string.Format($"{{0,-{longestProcessName}}}", process.Key));
+				Console.ResetColor();
+				Console.Write("] Total: ");
+				Console.ForegroundColor = ConsoleColor.Cyan;
+				Console.Write($"{totalTimeSpan:hh\\:mm\\:ss}");
+				Console.ResetColor();
+				Console.WriteLine("");
+
+				if (showDetails) {
+					// TODO
+				}
+			}
+
+			var allProcessTimes = processWindowTimes
+						.Sum(p => p.Value.Values.Sum());
+			var allProcessTimesSpan = TimeSpan.FromMinutes(allProcessTimes);
+
+			Console.WriteLine("");
+			Console.Write(string.Format($"{{0,-{longestProcessName + 1}}}", "TOTAL"));
+			Console.Write("] Total: ");
+			Console.ForegroundColor = ConsoleColor.Cyan;
+			Console.Write($"{allProcessTimesSpan:hh\\:mm\\:ss}");
+			Console.ResetColor();
+			Console.WriteLine("");
+			Console.WriteLine("===================================================================");
+		}
+	}
+
 	private void HandleDayChange() {
 		var today = DateTime.Now.Date;
 		if (today != todayDate) {
@@ -248,6 +296,13 @@ public class WindowLogger {
 				}
 				else {
 					Console.Write("No active window     \r");
+				}
+
+				if (Console.KeyAvailable) {
+					var key = Console.ReadKey();
+					if (key.Key == ConsoleKey.S) {
+						ShowQuickSummary();
+					}
 				}
 
 				await Task.Delay(POLLING_INTERVAL_MS, cancellationToken);
