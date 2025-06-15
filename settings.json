@@ -21,6 +21,16 @@
 				"\u25CF"
 			]
 		},
+		"devenv": {
+			"DoSeparations": true,
+			"Separator": " - ",
+			"RemoveParts": [
+				1
+			],
+			"TrimCharacters": [
+				"\u25CF"
+			]
+		},
 		"TOTALCMD64": {
 			"EntriesByWindowTitle": false
 		},
