@@ -56,7 +56,7 @@ public class WindowLogger {
 		Console.ForegroundColor = ConsoleColor.White;
 		Console.WriteLine("\n===================================================================");
 		Console.WriteLine("Summary");
-		Console.WriteLine("===================================================================");
+		Console.WriteLine("-------------------------------------------------------------------");
 		Console.ResetColor();
 
 		if (processWindowTimes != null) {
@@ -117,9 +117,9 @@ public class WindowLogger {
 						.Sum(p => p.Value.Values.Sum());
 			var allProcessTimesSpan = TimeSpan.FromMinutes(allProcessTimes);
 
-			Console.WriteLine("");
+			Console.WriteLine("-------------------------------------------------------------------");
 			Console.Write(string.Format($"{{0,-{longestProcessName + 1}}}", "TOTAL"));
-			Console.Write("] Total: ");
+			Console.Write("         ");
 			Console.ForegroundColor = ConsoleColor.Cyan;
 			Console.Write($"{allProcessTimesSpan:hh\\:mm\\:ss}");
 			Console.ResetColor();
@@ -160,7 +160,8 @@ public class WindowLogger {
 		stopwatch = new Stopwatch();
 		todayDate = DateTime.Now.Date;
 		processWindowTimes = LoadLog();
-		DisplayLoadedWindowTimes();
+		System.Console.WriteLine("\nQuick recap what have I done today:");
+		ShowQuickSummary();
 		Console.WriteLine();
 	}
 

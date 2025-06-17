@@ -28,7 +28,6 @@ public class WindowLoggerMain {
 
 	private static async Task RunMonitoring(CancellationTokenSource cts, Settings settings) {
 		Console.WriteLine("Press Ctrl+C to exit");
-		Console.WriteLine();
 
 		var logger = new WindowLogger(settings);
 		try {
