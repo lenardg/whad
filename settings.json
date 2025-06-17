@@ -11,6 +11,16 @@
 				"\u25CF"
 			]
 		},
+		"stm32cubeide": {
+			"DoSeparations": true,
+			"Separator": " - ",
+			"RemoveParts": [
+				1
+			],
+			"TrimCharacters": [
+				"*"
+			]
+		},
 		"Code": {
 			"DoSeparations": true,
 			"Separator": " - ",
