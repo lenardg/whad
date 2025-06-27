@@ -53,6 +53,9 @@ public class WindowLogger {
 	}
 
 	private void ShowQuickSummary(bool showAll = false, bool showDetails = false ) {
+
+		if ( processWindowTimes == null || processWindowTimes.Count == 0 ) { return; }
+
 		Console.ForegroundColor = ConsoleColor.White;
 		Console.WriteLine("\n===================================================================");
 		Console.WriteLine("Summary");
