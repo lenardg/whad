@@ -116,17 +116,39 @@ public class WindowLogger {
 				}
 			}
 
-			var allProcessTimes = processWindowTimes
+			var allTimesMinutes = processWindowTimes
 						.Sum(p => p.Value.Values.Sum());
-			var allProcessTimesSpan = TimeSpan.FromMinutes(allProcessTimes);
+			var allTimes = TimeSpan.FromMinutes(allTimesMinutes);
+
+			var idleTimesMinutes = processWindowTimes.Where(p => settings.IdleProcesses.Contains(p.Key))
+				.Sum(p=>p.Value.Values.Sum());
+			var idleTimes = TimeSpan.FromMinutes(idleTimesMinutes);
+
+			var totalWithoutIdle = allTimes - idleTimes;
 
 			Console.WriteLine("-------------------------------------------------------------------");
+
 			Console.Write(string.Format($"{{0,-{longestProcessName + 1}}}", "TOTAL"));
 			Console.Write("         ");
 			Console.ForegroundColor = ConsoleColor.Cyan;
-			Console.Write($"{allProcessTimesSpan:hh\\:mm\\:ss}");
+			Console.Write($"{allTimes:hh\\:mm\\:ss}");
 			Console.ResetColor();
 			Console.WriteLine("");
+
+			Console.Write(string.Format($"{{0,-{longestProcessName + 1}}}", "IDLE"));
+			Console.Write("       ");
+			Console.ForegroundColor = ConsoleColor.Red;
+			Console.Write($"- {idleTimes:hh\\:mm\\:ss}");
+			Console.ResetColor();
+			Console.WriteLine("");
+
+			Console.Write(string.Format($"{{0,-{longestProcessName + 1}}}", "TOTAL (without IDLE)"));
+			Console.Write("         ");
+			Console.ForegroundColor = ConsoleColor.Green;
+			Console.Write($"{totalWithoutIdle:hh\\:mm\\:ss}");
+			Console.ResetColor();
+			Console.WriteLine("");
+
 			Console.WriteLine("===================================================================");
 		}
 	}

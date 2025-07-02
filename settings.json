@@ -1,5 +1,9 @@
 {
 	"LoggingFolder": "logs",
+	"IdleProcesses": [
+		"LockApp",
+		"--Windows System--"
+	],
 	"ProcessSettings": {
 		"Cursor": {
 			"DoSeparations": true,

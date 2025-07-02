@@ -4,6 +4,8 @@ public class Settings
 {
     public string LoggingFolder { get; set; } = "logs";
 
+	public string[] IdleProcesses { get; set; } = [];
+
     public Dictionary<string, ProcessOptions> ProcessSettings { get; set; } = new();
 }
 
