@@ -11,6 +11,7 @@ public class WindowLogger {
 	private Dictionary<string, Dictionary<string, double>> processWindowTimes;
 	private DateTime todayDate;
 	private const int POLLING_INTERVAL_MS = 1100;
+	private const string MANUALLY_ADDED = "--MANUALLY ADDED--";
 
 	private readonly Settings settings;
 
@@ -269,6 +270,38 @@ public class WindowLogger {
 		}
 	}
 
+	private void AddManualWork ( int minutes ) {
+		if ( processWindowTimes == null ) {
+			processWindowTimes = new Dictionary<string, Dictionary<string, double>>();
+		}
+
+		if ( processWindowTimes.ContainsKey(MANUALLY_ADDED) == false ) {
+			processWindowTimes[MANUALLY_ADDED] = new Dictionary<string, double>();
+			processWindowTimes[MANUALLY_ADDED][MANUALLY_ADDED] = 0;
+		}
+
+		processWindowTimes[MANUALLY_ADDED][MANUALLY_ADDED] += minutes;
+		if (processWindowTimes[MANUALLY_ADDED][MANUALLY_ADDED] < 0 ) {
+			processWindowTimes[MANUALLY_ADDED][MANUALLY_ADDED] = 0;
+		}
+
+		var screenWidth = Console.WindowWidth - 1;
+		string spaces = new string(' ', screenWidth);
+		Console.Write(spaces + "\r");
+
+		var total = TimeSpan.FromMinutes(processWindowTimes[MANUALLY_ADDED][MANUALLY_ADDED]);
+
+		Console.Write("Manual work: added ");
+		Console.ForegroundColor = ConsoleColor.Green;
+		Console.Write($"{minutes}");
+		Console.ResetColor();
+		Console.Write(" minutes. Total today: ");
+		Console.ForegroundColor = ConsoleColor.Green;
+		Console.Write($"{total:hh\\:mm\\:ss}");
+		Console.ResetColor();
+		Console.WriteLine();
+	}
+
 	public async Task StartAsync(CancellationToken cancellationToken) {
 		try {
 			while (!cancellationToken.IsCancellationRequested) {
@@ -359,6 +392,12 @@ public class WindowLogger {
 					}
 					if (key.Key == ConsoleKey.D) {
 						ShowQuickSummary(showDetails: true);
+					}
+					if (key.Key == ConsoleKey.M) {
+						AddManualWork(15);
+					}
+					if (key.Key == ConsoleKey.N) {
+						AddManualWork(-15);
 					}
 				}
 
