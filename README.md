@@ -47,7 +47,19 @@ While the app is logging, you can press the following keys:
 
 * `S` - display a summary for the running day
 * `D` - display details for the running day
+* `P` - pin the previous process. it stays pinned until unpinned or closed
+* `U` - unpin
 * `Ctrl-C` - close the app
+
+#### Pinning a process
+
+When you pin a process (by pressing `P`) WHAD will keep monitoring that process until the pinned item quits or until you unpin the process.
+
+Quitting means simply the window is closed, not that the entire process quits.
+
+Pinning pins the _previous_ active window as the pinned item. This is because when you switch to WHAD, it will be the active window, so it makes no sens to pin that one.
+
+You can see what is pinned because in that case WHAD will tell you _Pinned window_ instead of _Active window_.
 
 
 ### Checking logs

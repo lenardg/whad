@@ -7,6 +7,8 @@ public class WindowInfo {
 	public string Title { get; set; } = string.Empty;
 	public string ProcessName { get; set; } = string.Empty;
 
+	public IntPtr WindowHandle { get; set; } = IntPtr.Zero;
+
 	public void ProcessTitle(Settings settings) {
 		if (settings.ProcessSettings.ContainsKey(ProcessName)) {
 			var processSettings = settings.ProcessSettings[ProcessName];

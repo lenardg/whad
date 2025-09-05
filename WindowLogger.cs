@@ -185,10 +185,17 @@ public class WindowLogger {
 		this.settings = settings;
 		stopwatch = new Stopwatch();
 		todayDate = DateTime.Now.Date;
+		EnsureLogFolder();
 		processWindowTimes = LoadLog();
 		System.Console.WriteLine("\nQuick recap what have I done today:");
 		ShowQuickSummary();
 		Console.WriteLine();
+	}
+
+	private void EnsureLogFolder() {
+		if (Directory.Exists(settings.LoggingFolder) == false) {
+			Directory.CreateDirectory(settings.LoggingFolder);
+		}
 	}
 
 	private string GetFilenameForLog(DateTime date) {
@@ -240,24 +247,47 @@ public class WindowLogger {
 		stopwatch.Restart();
 	}
 
+	private bool skipCurrentProcessTimes = false;
+
 	private void ShowCurrentProcessTimes() {
+		if ( skipCurrentProcessTimes ) {
+			skipCurrentProcessTimes = false;
+			return;
+		}
+
 		if (currentProcessName != null && currentWindowTitle != null) {
+
+			var info = pinnedInfo ?? previousInfo;
+			var title = info?.Title;
+			var process = info?.ProcessName;
+
 			var elapsed = stopwatch.Elapsed;
 			var minutes = elapsed.TotalMinutes;
-			Console.Write("Active window: [");
-			Console.ForegroundColor = ConsoleColor.Yellow;
-			Console.Write(currentProcessName);
-			Console.ResetColor();
-			Console.Write("] ");
-			Console.ForegroundColor = ConsoleColor.White;
-			Console.Write(currentWindowTitle);
-			Console.ResetColor();
-			Console.Write(" for ");
-			Console.ForegroundColor = ConsoleColor.Green;
-			Console.Write($"{minutes:F1}");
-			Console.ResetColor();
-			Console.WriteLine(" minutes");
 			RecordProcessTime(currentProcessName, currentWindowTitle, minutes);
+
+			if (info != null) {
+				ShowActiveWindowTimes(info, title, process);
+				Console.WriteLine();
+			}
+
+			//if (pinnedInfo != null) {
+			//	Console.Write($"Pinned window: [");
+			//}
+			//else {
+			//	Console.Write($"Active window: [");
+			//}
+			//Console.ForegroundColor = ConsoleColor.Yellow;
+			//Console.Write(currentProcessName);
+			//Console.ResetColor();
+			//Console.Write("] ");
+			//Console.ForegroundColor = ConsoleColor.White;
+			//Console.Write(currentWindowTitle);
+			//Console.ResetColor();
+			//Console.Write(" for ");
+			//Console.ForegroundColor = ConsoleColor.Green;
+			//Console.Write($"{minutes:F1}");
+			//Console.ResetColor();
+			//Console.WriteLine(" minutes");
 		}
 	}
 
@@ -271,23 +301,21 @@ public class WindowLogger {
 	}
 
 	private void AddManualWork ( int minutes ) {
-		if ( processWindowTimes == null ) {
+		if (processWindowTimes == null) {
 			processWindowTimes = new Dictionary<string, Dictionary<string, double>>();
 		}
 
-		if ( processWindowTimes.ContainsKey(MANUALLY_ADDED) == false ) {
+		if (processWindowTimes.ContainsKey(MANUALLY_ADDED) == false) {
 			processWindowTimes[MANUALLY_ADDED] = new Dictionary<string, double>();
 			processWindowTimes[MANUALLY_ADDED][MANUALLY_ADDED] = 0;
 		}
 
 		processWindowTimes[MANUALLY_ADDED][MANUALLY_ADDED] += minutes;
-		if (processWindowTimes[MANUALLY_ADDED][MANUALLY_ADDED] < 0 ) {
+		if (processWindowTimes[MANUALLY_ADDED][MANUALLY_ADDED] < 0) {
 			processWindowTimes[MANUALLY_ADDED][MANUALLY_ADDED] = 0;
 		}
 
-		var screenWidth = Console.WindowWidth - 1;
-		string spaces = new string(' ', screenWidth);
-		Console.Write(spaces + "\r");
+		ClearLine();
 
 		var total = TimeSpan.FromMinutes(processWindowTimes[MANUALLY_ADDED][MANUALLY_ADDED]);
 
@@ -302,12 +330,66 @@ public class WindowLogger {
 		Console.WriteLine();
 	}
 
+	private static void ClearLine() {
+		var screenWidth = Console.WindowWidth - 1;
+		string spaces = new string(' ', screenWidth);
+		Console.Write(spaces + "\r");
+	}
+
+	private void UnpinPreviousInfo() {
+		if ( pinnedInfo != null ) {
+			ClearLine();
+			ShowCurrentProcessTimes();
+			skipCurrentProcessTimes = true;
+
+			pinnedInfo = null;
+			Console.WriteLine("Unpinned window.");
+		}
+	}
+
+	private void PinPreviousInfo() {
+		if ( previousInfo != null ) {
+			ClearLine();
+			ShowCurrentProcessTimes();
+			skipCurrentProcessTimes = true;
+
+			pinnedInfo = previousInfo;
+			Console.WriteLine("Pinned window.");
+		}
+	}
+
+	private WindowInfo? previousInfo = null;
+
+	private WindowInfo? lastActiveInfo = null;
+
+	private WindowInfo? pinnedInfo = null;
+
+
 	public async Task StartAsync(CancellationToken cancellationToken) {
 		try {
 			while (!cancellationToken.IsCancellationRequested) {
 				HandleDayChange();
 
-				var windowInfo = SystemInterop.GetActiveWindowInfo();
+				// get either the active or pinned window information
+				var windowInfo =
+					pinnedInfo == null
+					? SystemInterop.GetActiveWindowInfo()
+					: SystemInterop.GetWindowInfo(pinnedInfo.WindowHandle);
+
+				// detect if pinned window was closed
+				if ( pinnedInfo != null &&
+					(windowInfo == null || (windowInfo.ProcessName == SystemInterop.NO_ACTIVE_PROCESS && windowInfo.Title == SystemInterop.NO_ACTIVE_WINDOW)) ) {
+					windowInfo = SystemInterop.GetActiveWindowInfo();
+					pinnedInfo = null;
+					ClearLine();
+					ShowCurrentProcessTimes();
+					skipCurrentProcessTimes = true;
+
+					Console.ForegroundColor = ConsoleColor.Yellow;
+					Console.WriteLine("Pinned window was closed.");
+					Console.ResetColor();
+				}
+
 				windowInfo?.ProcessTitle(settings);
 
 				var windowTitle = windowInfo?.Title;
@@ -316,6 +398,11 @@ public class WindowLogger {
 
 				UpdateStopwatchState(hasActiveWindow);
 
+				if ( windowInfo?.WindowHandle != lastActiveInfo?.WindowHandle ) {
+					previousInfo = lastActiveInfo;
+					lastActiveInfo = windowInfo;
+				}
+
 				if (hasActiveWindow && windowTitle != null && processName != null) {
 					if (windowTitle != currentWindowTitle || processName != currentProcessName) {
 						HandleWindowChange(processName, windowTitle);
@@ -323,63 +410,7 @@ public class WindowLogger {
 				}
 
 				if (hasActiveWindow && windowInfo != null) {
-					var currentTime = stopwatch.Elapsed.TotalMinutes;
-					var totalTime = currentTime;
-
-					// Add previously recorded time if it exists
-					if (!string.IsNullOrEmpty(processName) && !string.IsNullOrEmpty(windowTitle) &&
-						processWindowTimes.ContainsKey(processName) &&
-						processWindowTimes[processName].ContainsKey(windowTitle)) {
-						currentTime += processWindowTimes[processName][windowTitle];
-						totalTime += processWindowTimes[processName].Values.Sum();
-					}
-					else if (!string.IsNullOrEmpty(processName) && processWindowTimes.ContainsKey(processName)) {
-						totalTime += processWindowTimes[processName].Values.Sum();
-					}
-
-					var truncatedTitle = windowTitle != null && windowTitle.Length > 50
-						? $"{windowTitle[..20]}...{windowTitle[^20..]}"
-						: windowTitle;
-
-					string FormatTime(double time) =>
-						time >= 60
-							? $"{(int)(time / 60):D2}:{(int)(time % 60):D2}:{(int)((time % 1) * 60):D2}"
-							: $"{(int)time:D2}:{(int)((time % 1) * 60):D2}";
-
-					var currentTimeFormatted = FormatTime(currentTime);
-					var totalTimeFormatted = FormatTime(totalTime);
-
-					var padding = new string(' ', Console.WindowWidth - 1);
-					Console.Write(padding);
-					Console.Write("\r");
-
-					Console.Write($"Active window: [");
-					Console.ForegroundColor = ConsoleColor.Yellow;
-					Console.Write(windowInfo.ProcessName);
-					Console.ResetColor();
-					Console.Write("] ");
-					Console.ForegroundColor = ConsoleColor.White;
-					Console.Write(truncatedTitle);
-					Console.ResetColor();
-					Console.Write(" (Current window: ");
-					Console.ForegroundColor = ConsoleColor.Green;
-					Console.Write(currentTimeFormatted);
-					Console.ResetColor();
-					Console.Write(", App total: ");
-					Console.ForegroundColor = ConsoleColor.Green;
-					Console.Write(totalTimeFormatted);
-
-					Console.ResetColor();
-					Console.Write(") ==> Today: ");
-					Console.ForegroundColor = ConsoleColor.Cyan;
-					// Only sum other processes' times, since currentTime already includes the current process
-					var otherProcessTimes = processWindowTimes
-						.Where(p => p.Key != processName)
-						.Sum(p => p.Value.Values.Sum());
-					Console.Write(FormatTime(totalTime + otherProcessTimes));
-
-					Console.ResetColor();
-					Console.Write("         \r");
+					ShowActiveWindowTimes(windowInfo, windowTitle, processName);
 				}
 				else {
 					Console.Write("No active window     \r");
@@ -399,6 +430,12 @@ public class WindowLogger {
 					if (key.Key == ConsoleKey.N) {
 						AddManualWork(-15);
 					}
+					if (key.Key == ConsoleKey.P) {
+						PinPreviousInfo();
+					}
+					if(key.Key == ConsoleKey.U) {
+						UnpinPreviousInfo();
+					}
 				}
 
 				await Task.Delay(POLLING_INTERVAL_MS, cancellationToken);
@@ -407,6 +444,71 @@ public class WindowLogger {
 		finally {
 			ShowCurrentProcessTimes(); // Save the final window time before exiting
 		}
+	}
+
+	private void ShowActiveWindowTimes(WindowInfo windowInfo, string? windowTitle, string? processName) {
+		var currentTime = stopwatch.Elapsed.TotalMinutes;
+		var totalTime = currentTime;
+
+		// Add previously recorded time if it exists
+		if (!string.IsNullOrEmpty(processName) && !string.IsNullOrEmpty(windowTitle) &&
+			processWindowTimes.ContainsKey(processName) &&
+			processWindowTimes[processName].ContainsKey(windowTitle)) {
+			currentTime += processWindowTimes[processName][windowTitle];
+			totalTime += processWindowTimes[processName].Values.Sum();
+		}
+		else if (!string.IsNullOrEmpty(processName) && processWindowTimes.ContainsKey(processName)) {
+			totalTime += processWindowTimes[processName].Values.Sum();
+		}
+
+		var truncatedTitle = windowTitle != null && windowTitle.Length > 50
+			? $"{windowTitle[..20]}...{windowTitle[^20..]}"
+			: windowTitle;
+
+		string FormatTime(double time) =>
+			time >= 60
+				? $"{(int)(time / 60):D2}:{(int)(time % 60):D2}:{(int)((time % 1) * 60):D2}"
+				: $"{(int)time:D2}:{(int)((time % 1) * 60):D2}";
+
+		var currentTimeFormatted = FormatTime(currentTime);
+		var totalTimeFormatted = FormatTime(totalTime);
+
+		var padding = new string(' ', Console.WindowWidth - 1);
+		Console.Write(padding);
+		Console.Write("\r");
+
+		if (pinnedInfo != null) {
+			Console.Write($"Pinned window: [");
+		}
+		else {
+			Console.Write($"Active window: [");
+		}
+		Console.ForegroundColor = ConsoleColor.Yellow;
+		Console.Write(windowInfo.ProcessName);
+		Console.ResetColor();
+		Console.Write("] ");
+		Console.ForegroundColor = ConsoleColor.White;
+		Console.Write(truncatedTitle);
+		Console.ResetColor();
+		Console.Write(" (Current window: ");
+		Console.ForegroundColor = ConsoleColor.Green;
+		Console.Write(currentTimeFormatted);
+		Console.ResetColor();
+		Console.Write(", App total: ");
+		Console.ForegroundColor = ConsoleColor.Green;
+		Console.Write(totalTimeFormatted);
+
+		Console.ResetColor();
+		Console.Write(") ==> Today: ");
+		Console.ForegroundColor = ConsoleColor.Cyan;
+		// Only sum other processes' times, since currentTime already includes the current process
+		var otherProcessTimes = processWindowTimes
+			.Where(p => p.Key != processName)
+			.Sum(p => p.Value.Values.Sum());
+		Console.Write(FormatTime(totalTime + otherProcessTimes));
+
+		Console.ResetColor();
+		Console.Write("         \r");
 	}
 }
 

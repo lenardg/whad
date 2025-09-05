@@ -30,6 +30,10 @@ public static class SystemInterop {
 			return new WindowInfo { Title = NO_ACTIVE_WINDOW, ProcessName = NO_ACTIVE_PROCESS };
 		}
 
+		return GetWindowInfo ( windowHandle );
+	}
+
+	public static WindowInfo? GetWindowInfo( IntPtr windowHandle ) {
 		// Get window title
 		var titleBuilder = new StringBuilder(256);
 		if (Win32Interop.GetWindowText(windowHandle, titleBuilder, 256) == 0) {
@@ -42,7 +46,8 @@ public static class SystemInterop {
 			using var process = Process.GetProcessById((int)processId);
 			var windowInfo = new WindowInfo {
 				Title = titleBuilder.ToString(),
-				ProcessName = process.ProcessName
+				ProcessName = process.ProcessName,
+				WindowHandle = windowHandle,
 			};
 			return windowInfo;
 		}
