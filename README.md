@@ -20,6 +20,7 @@ requires some human coding still :) PRs are welcome.
 - Automatically tracks active window titles and process names
 - Logs time spent in each window/application
 - Saves daily logs in JSON format
+- Can pin a window (like a Teams meeting) so regardless of what you do it tracks tha pinned window. Stops when closed.
 - Can display summaries with hierarchical breakdown of time spent
 - Handles day changes automatically
 - Configurable via settings.json
@@ -53,11 +54,13 @@ While the app is logging, you can press the following keys:
 
 #### Pinning a process
 
-When you pin a process (by pressing `P`) WHAD will keep monitoring that process until the pinned item quits or until you unpin the process.
+When you pin a process (by pressing `P`) WHAD will keep monitoring that process until the pinned item quits or until you unpin the process. For example, if you pin a Microsoft Teams meeting, you
+can then move to other windows to check things, to take notes, etc, but WHAD will ignore these Window changes, and everything will be counted towards the pinned window. You can create other workflows
+for yourself, like pinning to a Visual Studio window. Just make sure you close the window or unpin it when you stop working on the project, otherwise all your hours go towards that one window.
 
-Quitting means simply the window is closed, not that the entire process quits.
+Quitting means simply the window is closed, not that the entire process quits. When a meeting ends, the window closes automatically and the pinning will stop.
 
-Pinning pins the _previous_ active window as the pinned item. This is because when you switch to WHAD, it will be the active window, so it makes no sens to pin that one.
+Pinning pins the _previous_ active window as the pinned item. This is because when you switch to WHAD, it will be the active window, so it makes no sense to pin that one.
 
 You can see what is pinned because in that case WHAD will tell you _Pinned window_ instead of _Active window_.
 
@@ -68,6 +71,7 @@ You can check logs by specifying which day to.
 
 ```bash
 whad.exe 2025-06-04
+dotnet run -- 2025-06-04
 ```
 
 This will display logs for 4th of June, 2025. Date parsing uses default setting for the computer.
