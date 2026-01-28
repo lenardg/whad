@@ -12,12 +12,14 @@ In the end, the tool became quite useful so now here it is.
 
 ## Requirements
 
-Currently WHAD runs under .NET 8 or .NET 9. It supports Windows only at the moment. Preliminary MacOS support is "AI coded" but
-requires some human coding still :) PRs are welcome.
+Currently WHAD runs under .NET 10. It supports Windows only at the moment.
+
+Preliminary MacOS support is "AI coded" but requires some human coding still :) PRs are welcome.
 
 ## Features
 
 - Automatically tracks active window titles and process names
+- Can split up titles so you can for example group Visual Studio Code windows by project but not by file, or not track separately files that are changed vs not changed (often a * in the name)
 - Logs time spent in each window/application
 - Saves daily logs in JSON format
 - Can pin a window (like a Teams meeting) so regardless of what you do it tracks tha pinned window. Stops when closed.
@@ -106,6 +108,9 @@ The application can be configured through a `settings.json` file. This file allo
 ### Configuration Options
 
 - `LoggingFolder`: The folder where daily log files will be stored (default: "logs")
+
+For per process settings:
+
 - `ProcessName`: The name of the process to configure (e.g., "chrome", "slack", "code")
 - `DoSeparations`: Whether to split the window title into parts using the separator
 - `Separator`: The character(s) to use when splitting the window title (default: " - ")
