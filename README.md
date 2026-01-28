@@ -52,7 +52,37 @@ While the app is logging, you can press the following keys:
 * `D` - display details for the running day
 * `P` - pin the previous process. it stays pinned until unpinned or closed
 * `U` - unpin
+* `M` - Add 15 minutes manual work
+* `N` - Subtract 15 minutes manual work
 * `Ctrl-C` - close the app
+
+#### Summaries and details
+
+You do not need to exit and run the logging commands to show you what you are doing and how you have been doing it. Just hit
+the `S` key to show a summary of what has happened today.
+
+For example it might show:
+
+```
+===================================================================
+Summary
+-------------------------------------------------------------------
+[devenv            ] Total: 00:02:16
+[--Windows System--] Total: 00:01:34
+-------------------------------------------------------------------
+TOTAL                       00:04:48
+IDLE                      - 00:01:35
+TOTAL (without IDLE)        00:03:13
+===================================================================
+```
+
+WHAD will only show things in the summary that have been on for more than 1 minute. If you want the small things also you will
+need to request log details. The short version or `S` will only show totals. It will also try to recognize idle times, when your
+computer was asleep or locked. These will be substracted automatically.
+
+The short version summarizes per process. If you want to see details, like which browser tabs you had open in Chrome or which
+projects you edited in Visual Studio you will need to request the details by pressing `D`.
+
 
 #### Pinning a process
 
@@ -65,6 +95,12 @@ Quitting means simply the window is closed, not that the entire process quits. W
 Pinning pins the _previous_ active window as the pinned item. This is because when you switch to WHAD, it will be the active window, so it makes no sense to pin that one.
 
 You can see what is pinned because in that case WHAD will tell you _Pinned window_ instead of _Active window_.
+
+#### Manual work
+
+Sometimes you happen to forget to start WHAD. You can then add manual time, in chunks of 15 minutes to bring your totals
+up to speed. Hit the `M` key to add 15 minutes of work. It will be shows as MANUALLY ADDED. If you press it too many times or
+change your mind, just hit `N` which will subtract 15 minutes of work. 
 
 
 ### Checking logs
